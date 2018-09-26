@@ -103,12 +103,6 @@ define([
     function update_provenance_metadata_codecell (cell) {
       if (!cell.metadata.hasOwnProperty("provenance")) {
             cell.metadata.provenance = [];
-            if (cell.output_area.outputs != undefined || cell.output_area.outputs.length != 0) {
-                cell.metadata.provenance.push({
-                    outputs: cell.output_area.outputs,
-                    source: cell.get_text()
-                });
-            }
       }
       var execution_time, start_time, end_time = 'Unknown';
       if (cell.metadata.hasOwnProperty("ExecutionTime")) {
@@ -281,6 +275,33 @@ define([
         source: cell.get_text(),
         last_modified: Jupyter.notebook.last_modified
       });
+    }
+
+    function update_original_notebook_provenance() {
+        Jupyter.notebook.get_cells().forEach(function(cell) {
+          if (!(cell instanceof CodeCell || cell instanceof MarkdownCell || cell instanceof RawCell)) {
+                return $();
+          }
+          if (!cell.metadata['provenance']) {
+            cell.metadata['provenance'] = [];
+          
+            if (cell instanceof MarkdownCell || cell instanceof RawCell) {
+              cell.metadata.provenance.push({
+                source: cell.get_text(),
+                last_modified: Jupyter.notebook.last_modified
+              });
+            } else if (cell instanceof CodeCell ) {
+              var execution_time = 'Unknown', start_time = 'Unknown', end_time = 'Unknown';
+              cell.metadata.provenance.push({
+                outputs: cell.output_area.outputs,
+                source: cell.get_text(),
+                start_time: start_time,
+                end_time: end_time,
+                execution_time: execution_time,
+              });
+            }
+          }
+        });
     }
 
     // Create slider and provenance area to display the provenance of the text cell.
@@ -578,16 +599,16 @@ define([
       }
 
     function add_option(select_element, cell_provenance) {
-        for (var i = 0; i < cell_provenance.length; i++) {   
-            if ("start_time" in cell_provenance[i] ) { 
-                var option = $("<option></option>")
-                        .attr("class", i)
-                        .text(cell_provenance[i]["start_time"]);
-            } else {
+        for (var i = 0; i < cell_provenance.length; i++) {  
+            if (i==0) {
                 var option = $("<option></option>")
                         .attr("class", i)
                         .text("Original Execution");
-            }
+            } else if ("start_time" in cell_provenance[i] ) { 
+                var option = $("<option></option>")
+                        .attr("class", i)
+                        .text(cell_provenance[i]["start_time"]);
+            } 
             if(select_element) {
                 select_element.append(option);
             }
@@ -651,6 +672,7 @@ define([
         }, function on_config_load_error (reason) {
             console.warn(log_prefix, 'Using defaults after error loading config:', reason);
         }).then(function do_stuff_with_config () {
+            update_original_notebook_provenance();
             patch_CodeCell_get_callbacks();
             add_toolbar_buttons(); // Buttons for the provenance of selected and all cells
             create_provenance_menu();
