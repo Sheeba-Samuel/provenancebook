@@ -1,4 +1,5 @@
 # ProvBook: Provenance of the Notebook.
+This is a complete package that captures and displays the provenance of different notebook extensions, download the provenance information in RDF and displays the provenance difference of several executions of each notebook cell.
 provenancebook provides extensions to capture and display the provenance of each notebook cell. It also shows the difference between the provenance of two executions of a notebook cell.
 Every cell is extended with a provenance area with a slider. The provenance area shows the history of the execution of each code cells. As you move the slider, you could see the start and end time of each execution, how long it took to execute, the number of runs, the source and output of each execution. It also shows the provenance of text cells where it shows the the modified time and the source. ProvBook provides three features:
 1. provbook : 
@@ -11,7 +12,7 @@ Every cell is extended with a provenance area with a slider. The provenance area
 
 Publication
 -----------
-ProvBook: Provenance-based Semantic Enrichment of Interactive Notebooks for Reproducibility, Sheeba Samuel and Birgitta König-Ries, The 17th International Semantic Web Conference (ISWC) 2018 Demo Track
+[ProvBook: Provenance-based Semantic Enrichment of Interactive Notebooks for Reproducibility](http://ceur-ws.org/Vol-2180/paper-57.pdf), Sheeba Samuel and Birgitta König-Ries, The 17th International Semantic Web Conference (ISWC) 2018 Demo Track
 
 Installation
 -------------
